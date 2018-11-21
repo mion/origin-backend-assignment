@@ -1,0 +1,2 @@
+include riskprofiler/schema.sql
+global-exclude *.pyc
