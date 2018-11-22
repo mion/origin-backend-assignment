@@ -57,8 +57,12 @@ class AgePolicy(BaseRiskPolicy):
 
 class LargeIncomePolicy(BaseRiskPolicy):
     LARGE_INCOME_THRESH = 200000
+
+    def __init__(self, large_income_thresh=LARGE_INCOME_THRESH):
+        self.large_income_thresh = large_income_thresh
+
     def apply(self, user_data, scoring):
-        if user_data.is_income_above(self.LARGE_INCOME_THRESH):
+        if user_data.is_income_above(self.large_income_thresh):
             for loi in Loi.all_lines():
                 scoring.subtract(points=1, loi=loi)
 
