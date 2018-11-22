@@ -77,17 +77,17 @@ class RiskQuestionData:
 
 class UserData:
     def __init__(self, **kwargs):
-        self.age = getattr(kwargs, 'age')
-        self.gender = getattr(kwargs, 'gender')
-        self.marital_status = getattr(kwargs, 'marital_status')
-        self.dependents = getattr(kwargs, 'dependents')
-        self.income = getattr(kwargs, 'income')
-        self.house_collec = getattr(kwargs, 'houses')
-        self.vehicle_collec = getattr(kwargs, 'vehicles')
-        self.risk_questions = getattr(kwargs, 'risk_questions')
+        self.age = kwargs['age']
+        self.gender = kwargs['gender']
+        self.marital_status = kwargs['marital_status']
+        self.dependents = kwargs['dependents']
+        self.income = kwargs['income']
+        self.house_collec = kwargs['houses']
+        self.vehicle_collec = kwargs['vehicles']
+        self.risk_questions = kwargs['risk_questions']
 
     def base_score(self):
-        return sum([q.value() for q in self.risk_questions])
+        return sum(self.risk_questions)
 
     def has_income(self):
         return self.income > 0
