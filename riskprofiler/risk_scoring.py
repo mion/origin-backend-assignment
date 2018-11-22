@@ -55,30 +55,30 @@ class RiskScoring:
         self.score_for_loi = {}
 
     def create(self, **kwargs):
-        loi = getattr(kwargs, 'loi')
-        multiple_items = getattr(kwargs, 'multiple_items', False)
+        loi = kwargs['loi']
+        multiple_items = kwargs['multiple_items'] if 'multiple_items' in kwargs else False
         if multiple_items:
             self.score_for_loi[loi] = MultipleItemRiskScore()
         else:
-            score = getattr(kwargs, 'score')
+            score = kwargs['score']
             self.score_for_loi[loi] = SingleItemRiskScore(score)
 
     def create_item(self, **kwargs):
-        loi = getattr(kwargs, 'loi')
-        item = getattr(kwargs, 'item')
-        score = getattr(kwargs, 'score')
+        loi = kwargs['loi']
+        item = kwargs['item']
+        score = kwargs['score']
         self.score_for_loi[loi].create_item(item, score)
 
     def add(self, **kwargs):
-        loi = getattr(kwargs, 'loi')
-        points = getattr(kwargs, 'points')
-        item = getattr(kwargs, 'item', None)
+        loi = kwargs['loi']
+        points = kwargs['points']
+        item = kwargs['item'] if 'item' in kwargs else None
         self.score_for_loi[loi].add(points, item)
 
     def subtract(self, **kwargs):
-        loi = getattr(kwargs, 'loi')
-        points = getattr(kwargs, 'points')
-        item = getattr(kwargs, 'item', None)
+        loi = kwargs['loi']
+        points = kwargs['points']
+        item = kwargs['item'] if 'item' in kwargs else None
         self.score_for_loi[loi].subtract(points, item)
 
     def to_profile(self, mapping):

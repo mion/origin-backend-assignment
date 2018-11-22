@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from riskprofiler.risk_policies import InitialRiskPolicy
+from riskprofiler.risk_policies import Loi, InitialRiskPolicy
 from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData
 from riskprofiler.risk_scoring import RiskScoring
 
@@ -18,7 +18,6 @@ def user_data():
     )
 
 def test_initial_risk_policy(user_data):
-    scoring_mock = Mock(spec=RiskScoring)
+    scoring = RiskScoring()
     policy = InitialRiskPolicy()
-    policy.apply(user_data, scoring_mock)
-    scoring_mock.create.assert_called()
+    policy.apply(user_data, scoring)

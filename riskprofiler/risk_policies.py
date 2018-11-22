@@ -2,7 +2,7 @@ from .line_of_insurance import Loi
 
 class RiskPolicySet:
     def __init__(self, **kwargs):
-        self.policies = getattr(kwargs, 'policies')
+        self.policies = kwargs['policies']
 
     def apply_all(self, user_data, risk_scoring):
         for pol in self.policies:
