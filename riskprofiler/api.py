@@ -3,8 +3,6 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-from riskprofiler.db import get_db
-
 bp = Blueprint('api', __name__)
 
 @bp.route('/risk_profile', methods=('GET', 'POST'))
