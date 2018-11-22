@@ -2,14 +2,12 @@ from .line_of_insurance import Loi
 
 class RiskPolicySet:
     def __init__(self, **kwargs):
-        self.user_data = getattr(kwargs, 'user_data')
         self.policies = getattr(kwargs, 'policies')
-        self.risk_scoring = getattr(kwargs, 'risk_scoring')
 
-    def apply_all(self):
+    def apply_all(self, user_data, risk_scoring):
         for pol in self.policies:
-            pol.apply(self.user_data, self.risk_scoring)
-        return self.risk_scoring
+            pol.apply(user_data, risk_scoring)
+        return risk_scoring
 
 class BaseRiskPolicy:
     def apply(self, user_data, risk_scoring):
