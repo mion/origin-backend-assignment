@@ -1,15 +1,6 @@
 from .line_of_insurance import Loi
 import datetime
 
-class RiskPolicySet:
-    def __init__(self, **kwargs):
-        self.policies = kwargs['policies']
-
-    def apply_all(self, user_data, risk_scoring):
-        for pol in self.policies:
-            pol.apply(user_data, risk_scoring)
-        return risk_scoring
-
 class BaseRiskPolicy:
     def apply(self, user_data, risk_scoring):
         raise NotImplementedError('subclass must implement "apply" method')
@@ -108,3 +99,18 @@ class SingleVehiclePolicy(BaseRiskPolicy):
         if user_data.vehicles_count() == 1:
             vehicle = user_data.get_vehicle_at(0)
             scoring.add(points=1, loi=Loi.auto, item=vehicle.item_key())
+
+CURRENT_RISK_POLICIES = [
+    InitialRiskPolicy(),
+    NoIncomePolicy(),
+    NoVehiclePolicy(),
+    NoHousePolicy(),
+    AgePolicy(),
+    LargeIncomePolicy(),
+    MortgagedHousePolicy(),
+    DependentsPolicy(),
+    MaritalStatusPolicy(),
+    RecentVehiclePolicy(),
+    SingleHousePolicy(),
+    SingleVehiclePolicy()
+]

@@ -3,17 +3,34 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
+from .risk_policies import CURRENT_RISK_POLICIES
+from .serialization import UserDataDeserializer, RiskProfileSerializer
+from .risk_scoring import RiskScoreValueMapping, RiskScoring, RiskProfileCalculator
+from .errors import *
+
 bp = Blueprint('api', __name__)
 
-@bp.route('/risk_profile', method='POST')
+@bp.route('/risk_profile', methods=['GET', 'POST'])
 def get_risk_profile():
     if request.method == 'POST':
-        resp = {
-            'status': 'created'
-        }
-        return jsonify(resp)
+        user_data_obj = request.get_json()
+        deserializer = UserDataDeserializer()
+        try:
+            user_data = deserializer.load(user_data_obj)
+            mapping = RiskScoreValueMapping()
+            scoring = RiskScoring()
+            calculator = RiskProfileCalculator(user_data=user_data, risk_policies=CURRENT_RISK_POLICIES, risk_scoring=scoring, risk_score_value_mapping=mapping)
+            risk_profile = calculator.calculate()
+            serializer = RiskProfileSerializer()
+            resp = serializer.to_dict(risk_profile)
+            return jsonify(resp)
+        except MissingKeyDeserializationError as err:
+            return jsonify({'error': str(err)})
+        except WrongKeyTypeDeserializationError as err:
+            return jsonify({'error': str(err)})
     else:
-        resp = {
-            'email': 'foo@bar.com'
-        }
+        # Here we could grab the user email through the querystring,
+        # and then see if there's a risk profile for that user in the DB.
+        # (We would also use an ORM for the database model...)
+        resp = {}
         return jsonify(resp)
