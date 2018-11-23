@@ -1,4 +1,5 @@
 from .line_of_insurance import Loi
+import datetime
 
 class RiskPolicySet:
     def __init__(self, **kwargs):
@@ -86,10 +87,14 @@ class MaritalStatusPolicy(BaseRiskPolicy):
             scoring.subtract(points=1, loi=Loi.disability)
 
 class RecentVehiclePolicy(BaseRiskPolicy):
-    NUM_RECENT_YEARS = 5 # FIXME Use time delta, this is incorrect.
+    NUM_RECENT_YEARS = 5
+    def __init__(self, curr_date=None, num_recent_years=NUM_RECENT_YEARS):
+        self.curr_date = datetime.date.today() if curr_date is None else curr_date
+        self.num_recent_years = num_recent_years
+
     def apply(self, user_data, scoring):
-        for vehicle in user_data.get_vehicles():
-            if vehicle.years_since_production() <= self.NUM_RECENT_YEARS:
+        for vehicle in user_data.vehicles():
+            if vehicle.years_since_production(self.curr_date) <= self.num_recent_years:
                 scoring.add(points=1, loi=Loi.auto, item=vehicle.item_key())
 
 class SingleHousePolicy(BaseRiskPolicy):

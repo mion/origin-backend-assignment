@@ -1,3 +1,4 @@
+import datetime
 from enum import Enum, unique
 from .errors import ItemDataKeyNotUnique
 
@@ -59,6 +60,14 @@ class VehicleItemData(ItemData):
         self.make = kwargs['make']
         self.model = kwargs['model']
         self.year = kwargs['year']
+    
+    def years_since_production(self, curr_date): # FIXME date calculation is not correct.
+        """Returns a decimal (float) number of years, 
+        counted in days since `curr_date`."""
+        production_date = datetime.date(self.year, 1, 1)
+        delta = curr_date - production_date
+        years = delta.days / 365.0
+        return years
 
     @staticmethod
     def parse(json):

@@ -1,4 +1,5 @@
 import pytest
+import datetime
 from unittest.mock import Mock
 from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy, NoVehiclePolicy, NoHousePolicy, AgePolicy, LargeIncomePolicy, MortgagedHousePolicy, DependentsPolicy, MaritalStatusPolicy, RecentVehiclePolicy, SingleHousePolicy, SingleVehiclePolicy
 from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData, HouseStatus, MaritalStatus, Gender
@@ -198,3 +199,23 @@ def test_marital_status_policy_married(make_user_data):
     scoring.add.assert_called_once_with(points=1, loi=Loi.life)
     scoring.subtract.assert_called_once_with(points=1, loi=Loi.disability)
 
+def test_recent_vehicle_policy_empty(make_user_data):
+    user_data = make_user_data(vehicles=ItemDataCollection())
+    scoring = Mock(spec=RiskScoring)
+    policy = RecentVehiclePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_not_called()
+
+def test_recent_vehicle_policy_not_empty(make_user_data):
+    user_data = make_user_data(vehicles=ItemDataCollection(
+        VehicleItemData(0, make='Tesla', model='Model S', year=2015),
+        VehicleItemData(1, make='Ford', model='Model T', year=1950),
+        VehicleItemData(2, make='Tesla', model='Model S', year=2016)
+    ))
+    scoring = Mock(spec=RiskScoring)
+    curr_date = datetime.date(2018, 1, 1)
+    policy = RecentVehiclePolicy(curr_date=curr_date, num_recent_years=5)
+    policy.apply(user_data, scoring)
+    assert scoring.add.call_count == 2
+    scoring.add.assert_any_call(points=1, loi=Loi.auto, item=0)
+    scoring.add.assert_any_call(points=1, loi=Loi.auto, item=2)

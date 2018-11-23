@@ -1,6 +1,6 @@
 from .errors import InvalidRiskScoreOperation
 
-class SingleItemRiskScore:
+class _SingleItemRiskScore:
     def __init__(self, score):
         self.score = score
 
@@ -20,7 +20,7 @@ class SingleItemRiskScore:
     def map_aversion(self, mapping):
         return mapping.aversion_for(self.score)
 
-class MultipleItemRiskScore:
+class _MultipleItemRiskScore:
     def __init__(self):
         self.score_for_item = {}
 
@@ -59,10 +59,10 @@ class RiskScoring:
         loi = kwargs['loi']
         multiple_items = kwargs['multiple_items'] if 'multiple_items' in kwargs else False
         if multiple_items:
-            self.score_for_loi[loi] = MultipleItemRiskScore()
+            self.score_for_loi[loi] = _MultipleItemRiskScore()
         else:
             score = kwargs['score']
-            self.score_for_loi[loi] = SingleItemRiskScore(score)
+            self.score_for_loi[loi] = _SingleItemRiskScore(score)
 
     def create_item(self, **kwargs):
         loi = kwargs['loi']
