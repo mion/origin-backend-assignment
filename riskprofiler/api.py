@@ -5,7 +5,7 @@ from werkzeug.exceptions import abort
 
 bp = Blueprint('api', __name__)
 
-@bp.route('/risk_profile', methods=('GET', 'POST'))
+@bp.route('/risk_profile', method='POST')
 def get_risk_profile():
     if request.method == 'POST':
         resp = {
