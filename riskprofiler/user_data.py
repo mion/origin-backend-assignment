@@ -17,9 +17,9 @@ class HouseStatus(Enum):
     mortgaged = 'mortgaged'
 
 class ItemDataCollection:
-    def __init__(self, item_datas=[]):
+    def __init__(self, *args):
         self._item_data_for_key = {}
-        for item_data in item_datas:
+        for item_data in args:
             self.add(item_data)
 
     def __len__(self):
