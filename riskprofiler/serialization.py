@@ -51,3 +51,13 @@ class UserDataDeserializer:
             vehicles=vehicles,
             risk_questions=risk_questions
         )
+
+class RiskProfileSerializer:
+    def to_dict(self, risk_profile):
+        obj = {}
+        for loi, val in risk_profile.items():
+            if isinstance(val, dict):
+                obj[loi.value] = [{'key': item_key, 'value': aversion.value} for item_key, aversion in val.items()]
+            else:
+                obj[loi.value] = val.value
+        return obj
