@@ -24,10 +24,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
     from . import api
     app.register_blueprint(api.bp)
     app.add_url_rule('/', endpoint='index')
