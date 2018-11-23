@@ -1,5 +1,5 @@
 import datetime
-from enum import Enum, unique
+from enum import Enum, unique, auto
 from .errors import ItemDataKeyNotUnique
 
 @unique
@@ -7,15 +7,42 @@ class Gender(Enum):
     male = 'male'
     female = 'female'
 
+    @staticmethod
+    def from_str(s):
+        if s == 'male':
+            return Gender.male
+        elif s == 'female':
+            return Gender.female
+        else:
+            raise ValueError
+
 @unique
 class MaritalStatus(Enum):
     single = 'single'
     married = 'married'
 
+    @staticmethod
+    def from_str(s):
+        if s == 'single':
+            return MaritalStatus.single
+        elif s == 'married':
+            return MaritalStatus.married
+        else:
+            raise ValueError
+
 @unique
 class HouseStatus(Enum):
     owned = 'owned'
     mortgaged = 'mortgaged'
+
+    @staticmethod
+    def from_str(s):
+        if s == 'owned':
+            return HouseStatus.owned
+        elif s == 'mortgaged':
+            return HouseStatus.mortgaged
+        else:
+            raise ValueError
 
 class ItemDataCollection:
     def __init__(self, *args):
@@ -47,13 +74,6 @@ class HouseItemData(ItemData):
         self.zip_code = kwargs['zip_code']
         self.status = kwargs['status']
 
-    @staticmethod
-    def parse(json):
-        key = json['key']
-        zip_code = json['zip']
-        status = HouseStatus.parse(json['status'])
-        return HouseItemData(key, zip_code=zip_code, status=status)
-
 class VehicleItemData(ItemData):
     def __init__(self, key, **kwargs):
         super().__init__(key)
@@ -68,14 +88,6 @@ class VehicleItemData(ItemData):
         delta = curr_date - production_date
         years = delta.days / 365.0
         return years
-
-    @staticmethod
-    def parse(json):
-        key = json['key']
-        make = json['make']
-        model = json['model']
-        year = json['year']
-        return VehicleItemData(key, make=make, model=model, year=year)
 
 class UserData:
     def __init__(self, **kwargs):
