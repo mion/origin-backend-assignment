@@ -22,11 +22,11 @@ class InitialRiskPolicy(BaseRiskPolicy):
 
         scoring.create(loi=Loi.home, multiple_items=True)
         for house in user_data.houses():
-            scoring.create_item(loi=Loi.home, item=house.key(), score=base_score_value)
+            scoring.create_item(loi=Loi.home, item=house.item_key(), score=base_score_value)
 
-        scoring.create(loi=Loi.auto, score=base_score_value, multiple_items=True)
+        scoring.create(loi=Loi.auto, multiple_items=True)
         for vehicle in user_data.vehicles():
-            scoring.create_item(loi=Loi.auto, item=vehicle.key(), score=base_score_value)
+            scoring.create_item(loi=Loi.auto, item=vehicle.item_key(), score=base_score_value)
 
 class NoIncomePolicy(BaseRiskPolicy):
     def apply(self, user_data, scoring):

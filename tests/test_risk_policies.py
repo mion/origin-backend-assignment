@@ -1,19 +1,28 @@
 import pytest
 from unittest.mock import Mock
 from riskprofiler.risk_policies import Loi, InitialRiskPolicy
-from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData
+from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData, HouseStatus
 from riskprofiler.risk_scoring import RiskScoring
 
 @pytest.fixture
 def user_data():
     return UserData(
-        age=25,
+        age=29,
         gender='male',
         marital_status='single',
         dependents=0,
-        income=50000,
-        houses=ItemDataCollection(),
-        vehicles=ItemDataCollection(),
+        income=160000,
+        houses=ItemDataCollection(
+            item_datas=[
+                HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged)
+            ]
+        ),
+        vehicles=ItemDataCollection(
+            item_datas=[
+                VehicleItemData(0, make='Tesla', model='Model S', year=2015),
+                VehicleItemData(1, make='Tesla', model='Model X', year=2017),
+            ]
+        ),
         risk_questions=[0, 0, 0]
     )
 
@@ -22,4 +31,11 @@ def test_initial_risk_policy(user_data):
     policy = InitialRiskPolicy()
     policy.apply(user_data, scoring)
     assert scoring.create.call_count == 4
-    assert scoring.create_item.call_count == 0
+    assert scoring.create_item.call_count == 3
+    scoring.create.assert_any_call(loi=Loi.life, score=0)
+    scoring.create.assert_any_call(loi=Loi.disability, score=0)
+    scoring.create.assert_any_call(loi=Loi.home, multiple_items=True)
+    scoring.create.assert_any_call(loi=Loi.auto, multiple_items=True)
+    scoring.create_item.assert_any_call(loi=Loi.home, item=0, score=0)
+    scoring.create_item.assert_any_call(loi=Loi.auto, item=0, score=0)
+    scoring.create_item.assert_any_call(loi=Loi.auto, item=1, score=0)
