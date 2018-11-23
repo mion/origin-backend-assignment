@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from riskprofiler.risk_policies import Loi, InitialRiskPolicy
+from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy
 from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData, HouseStatus
 from riskprofiler.risk_scoring import RiskScoring
 
@@ -39,3 +39,10 @@ def test_initial_risk_policy(user_data):
     scoring.create_item.assert_any_call(loi=Loi.home, item=0, score=0)
     scoring.create_item.assert_any_call(loi=Loi.auto, item=0, score=0)
     scoring.create_item.assert_any_call(loi=Loi.auto, item=1, score=0)
+
+def test_no_income_policy(user_data):
+    user_data.income = 0
+    scoring = Mock(spec=RiskScoring)
+    policy = NoIncomePolicy()
+    policy.apply(user_data, scoring)
+    scoring.disable.assert_called_once_with(loi=Loi.disability)

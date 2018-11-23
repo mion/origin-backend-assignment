@@ -53,6 +53,7 @@ class MultipleItemRiskScore:
 class RiskScoring:
     def __init__(self, **kwargs):
         self.score_for_loi = {}
+        self.disabled_lois = {}
 
     def create(self, **kwargs):
         loi = kwargs['loi']
@@ -80,6 +81,10 @@ class RiskScoring:
         points = kwargs['points']
         item = kwargs['item'] if 'item' in kwargs else None
         self.score_for_loi[loi].subtract(points, item)
+    
+    def disable(self, **kwargs):
+        loi = kwargs['loi']
+        self.disabled_lois[loi] = True
 
     def to_profile(self, mapping):
         profile = {}
