@@ -238,3 +238,22 @@ def test_single_house_policy_one_house(make_user_data):
     policy = SingleHousePolicy()
     policy.apply(user_data, scoring)
     scoring.add.assert_called_once_with(points=1, loi=Loi.home, item=0)
+
+def test_single_vehicle_policy_multiple_vehicles(make_user_data):
+    user_data = make_user_data(vehicles=ItemDataCollection(
+        VehicleItemData(0, make='Tesla', model='Model S', year=2015),
+        VehicleItemData(1, make='Ford', model='Model T', year=1950),
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = SingleVehiclePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_not_called()
+
+def test_single_vehicle_policy_one_vehicle(make_user_data):
+    user_data = make_user_data(vehicles=ItemDataCollection(
+        VehicleItemData(0, make='Ford', model='Model T', year=1950)
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = SingleVehiclePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_called_once_with(points=1, loi=Loi.auto, item=0)

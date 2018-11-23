@@ -126,6 +126,10 @@ class UserData:
         house_items = [h for h in self.house_collec.items()]
         return house_items[index]
     
+    def get_vehicle_at(self, index):
+        vehicle_items = [v for v in self.vehicle_collec.items()]
+        return vehicle_items[index]
+    
     def has_mortgaged_houses(self):
         return len(self.get_mortgaged_houses()) > 0
 
@@ -137,6 +141,9 @@ class UserData:
 
     def vehicles(self):
         return self.vehicle_collec.items()
+    
+    def vehicles_count(self):
+        return len(self.vehicle_collec)
 
     def has_dependents(self):
         return self.dependents > 0
