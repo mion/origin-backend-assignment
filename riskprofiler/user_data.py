@@ -107,9 +107,11 @@ class UserData:
     def has_houses(self):
         return len(self.house_collec) > 0
 
+    def get_mortgaged_houses(self):
+        return [h for h in self.house_collec.items() if h.status == HouseStatus.mortgaged]
+    
     def has_mortgaged_houses(self):
-        mortgaged_houses = [h for h in self.house_collec.items() if h.status == HouseStatus.mortgaged]
-        return len(mortgaged_houses) > 0
+        return len(self.get_mortgaged_houses()) > 0
 
     def houses(self):
         return self.house_collec.items()

@@ -145,3 +145,24 @@ def test_large_income_policy_under(make_user_data):
     policy = LargeIncomePolicy(large_income_thresh=101)
     policy.apply(user_data, scoring)
     scoring.subtract.assert_not_called()
+
+def test_mortgaged_house_policy_empty(make_user_data):
+    user_data = make_user_data()
+    scoring = Mock(spec=RiskScoring)
+    policy = MortgagedHousePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_not_called()
+
+def test_mortgaged_house_policy_not_empty(make_user_data):
+    user_data = make_user_data(houses=ItemDataCollection(
+        HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged),
+        HouseItemData(1, zip_code=124, status=HouseStatus.owned),
+        HouseItemData(2, zip_code=125, status=HouseStatus.mortgaged)
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = MortgagedHousePolicy()
+    policy.apply(user_data, scoring)
+    assert scoring.add.call_count == 3
+    scoring.add.assert_any_call(points=1, loi=Loi.disability)
+    scoring.add.assert_any_call(points=1, loi=Loi.home, item=0)
+    scoring.add.assert_any_call(points=1, loi=Loi.home, item=2)
