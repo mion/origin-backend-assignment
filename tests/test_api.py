@@ -34,16 +34,22 @@ def test_risk_profile_post_valid_payload(client, user_data_json):
     assert resp.status_code == HTTPStatus.CREATED
     resp_json = resp.get_json()
     assert 'auto' in resp_json
+    assert isinstance(resp_json['auto'], list)
     assert 'home' in resp_json
+    assert isinstance(resp_json['home'], list)
     assert 'disability' in resp_json
+    assert isinstance(resp_json['disability'], str)
     assert 'life' in resp_json
+    assert isinstance(resp_json['life'], str)
 
 def test_risk_profile_post_disabled_field_payload(client, user_data_json):
     user_data_json['age'] = 90
     resp = client.post('/risk_profile', json=user_data_json)
     assert resp.status_code == HTTPStatus.CREATED
     resp_json = resp.get_json()
-    assert 'auto' in resp_json
-    assert 'home' in resp_json
     assert 'disability' not in resp_json
     assert 'life' not in resp_json
+    assert 'auto' in resp_json
+    assert isinstance(resp_json['auto'], list)
+    assert 'home' in resp_json
+    assert isinstance(resp_json['home'], list)
