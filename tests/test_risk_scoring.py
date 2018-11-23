@@ -1,5 +1,6 @@
 import pytest
 from riskprofiler.risk_scoring import RiskScoring, _SingleItemRiskScore, _MultipleItemRiskScore
+from riskprofiler.errors import InvalidRiskScoreOperation
 
 @pytest.fixture
 def scoring():
@@ -46,3 +47,7 @@ def test_risk_scoring_subtract_multiple(scoring):
 def test_risk_scoring_disable(scoring):
     scoring.disable(loi='multiple')
     assert 'multiple' not in scoring
+
+def test_risk_scoring_invalid_operation(scoring):
+    with pytest.raises(InvalidRiskScoreOperation):
+        scoring.create_item(loi='single', item='baz', score=42)
