@@ -88,6 +88,9 @@ class UserData:
 
     def base_score(self):
         return sum(self.risk_questions)
+    
+    def is_married(self):
+        return self.marital_status == MaritalStatus.married
 
     def has_income(self):
         return self.income > 0

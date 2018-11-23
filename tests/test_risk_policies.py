@@ -168,7 +168,7 @@ def test_mortgaged_house_policy_not_empty(make_user_data):
     scoring.add.assert_any_call(points=1, loi=Loi.home, item=2)
 
 def test_dependents_policy_zero(make_user_data):
-    user_data = make_user_data()
+    user_data = make_user_data(dependents=0)
     scoring = Mock(spec=RiskScoring)
     policy = DependentsPolicy()
     policy.apply(user_data, scoring)
@@ -182,3 +182,19 @@ def test_dependents_policy_above_zero(make_user_data):
     assert scoring.add.call_count == 2
     scoring.add.assert_any_call(points=1, loi=Loi.disability)
     scoring.add.assert_any_call(points=1, loi=Loi.life)
+
+def test_marital_status_policy_single(make_user_data):
+    user_data = make_user_data(marital_status=MaritalStatus.single)
+    scoring = Mock(spec=RiskScoring)
+    policy = MaritalStatusPolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_not_called()
+
+def test_marital_status_policy_married(make_user_data):
+    user_data = make_user_data(marital_status=MaritalStatus.married)
+    scoring = Mock(spec=RiskScoring)
+    policy = MaritalStatusPolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_called_once_with(points=1, loi=Loi.life)
+    scoring.subtract.assert_called_once_with(points=1, loi=Loi.disability)
+
