@@ -19,11 +19,11 @@ The rest of the files are pretty self-explanatory. There are many things I don't
 
 In case you want to run the tests, clone the repo; `cd` into its directory and then: 
 
-  $ pip install -e
-  $ export FLASK_ENV=development
-  $ export FLASK_APP=riskprofiler
-  $ pytest
+    $ pip install -e
+    $ export FLASK_ENV=development
+    $ export FLASK_APP=riskprofiler
+    $ pytest
 
 To see the test coverage report:
 
-  $ coverage run -m pytest
+    $ coverage run -m pytest
