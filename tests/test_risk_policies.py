@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy, NoVehiclePolicy, NoHousePolicy
+from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy, NoVehiclePolicy, NoHousePolicy, AgePolicy, LargeIncomePolicy, MortgagedHousePolicy, DependentsPolicy, MaritalStatusPolicy, RecentVehiclePolicy, SingleHousePolicy, SingleVehiclePolicy
 from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData, HouseStatus, MaritalStatus, Gender
 from riskprofiler.risk_scoring import RiskScoring
 
@@ -96,3 +96,34 @@ def test_no_house_policy_not_empty(make_user_data):
     policy = NoHousePolicy()
     policy.apply(user_data, scoring)
     scoring.disable.assert_not_called()
+
+def test_age_policy_under_30(make_user_data):
+    user_data = make_user_data(age=29)
+    scoring = Mock(spec=RiskScoring)
+    policy = AgePolicy()
+    policy.apply(user_data, scoring)
+    assert scoring.subtract.call_count == 4
+    scoring.subtract.assert_any_call(points=2, loi=Loi.life)
+    scoring.subtract.assert_any_call(points=2, loi=Loi.disability)
+    scoring.subtract.assert_any_call(points=2, loi=Loi.home)
+    scoring.subtract.assert_any_call(points=2, loi=Loi.auto)
+
+def test_age_policy_under_40(make_user_data):
+    user_data = make_user_data(age=30)
+    scoring = Mock(spec=RiskScoring)
+    policy = AgePolicy()
+    policy.apply(user_data, scoring)
+    assert scoring.subtract.call_count == 4
+    scoring.subtract.assert_any_call(points=1, loi=Loi.life)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.disability)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.home)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.auto)
+
+def test_age_policy_over_60(make_user_data):
+    user_data = make_user_data(age=61)
+    scoring = Mock(spec=RiskScoring)
+    policy = AgePolicy()
+    policy.apply(user_data, scoring)
+    assert scoring.disable.call_count == 2
+    scoring.disable.assert_any_call(loi=Loi.life)
+    scoring.disable.assert_any_call(loi=Loi.disability)
