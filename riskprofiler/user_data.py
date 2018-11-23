@@ -43,8 +43,8 @@ class ItemData:
 class HouseItemData(ItemData):
     def __init__(self, key, **kwargs):
         super().__init__(key)
-        self.zip_code = getattr(kwargs, 'zip_code')
-        self.status = getattr(kwargs, 'status')
+        self.zip_code = kwargs['zip_code']
+        self.status = kwargs['status']
 
     @staticmethod
     def parse(json):
@@ -56,9 +56,9 @@ class HouseItemData(ItemData):
 class VehicleItemData(ItemData):
     def __init__(self, key, **kwargs):
         super().__init__(key)
-        self.make = getattr(kwargs, 'make')
-        self.model = getattr(kwargs, 'model')
-        self.year = getattr(kwargs, 'year')
+        self.make = kwargs['make']
+        self.model = kwargs['model']
+        self.year = kwargs['year']
 
     @staticmethod
     def parse(json):

@@ -17,10 +17,10 @@ class RiskAversionMapping:
 
 class RiskProfile:
     def __init__(self, **kwargs):
-        self.user_data = getattr(kwargs, 'user_data')
-        self.policy_set = getattr(kwargs, 'policy_set')
-        self.risk_scoring = getattr(kwargs, 'risk_scoring')
-        self.risk_aversion_mapping = getattr(kwargs, 'risk_aversion_mapping')
+        self.user_data = kwargs['user_data']
+        self.policy_set = kwargs['policy_set']
+        self.risk_scoring = kwargs['risk_scoring']
+        self.risk_aversion_mapping = kwargs['risk_aversion_mapping']
     
     def compute(self):
         final_risk_scoring = self.policy_set.apply_all(self.user_data, self.risk_scoring)
