@@ -26,7 +26,7 @@ def get_risk_profile():
             risk_profile = calculator.calculate()
             serializer = RiskProfileSerializer()
             resp = serializer.to_dict(risk_profile)
-            return jsonify(resp)
+            return jsonify(resp), HTTPStatus.CREATED # Let's return 201 as if it had been saved to the DB.
         except MissingKeyDeserializationError as err:
             return jsonify({'error': str(err)}), HTTPStatus.UNPROCESSABLE_ENTITY
         except WrongKeyTypeDeserializationError as err:

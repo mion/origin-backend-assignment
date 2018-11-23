@@ -29,7 +29,7 @@ def user_data_json():
         'marital_status': 'married',
         'dependents': 2,
         'income': 150000,
-        'risk_questions': [0, 0, 0],
+        'risk_questions': [0, 1, 0],
         'houses': [
             {'key': 0, 'zip_code': 123, 'status': 'owned'},
             {'key': 1, 'zip_code': 456, 'status': 'mortgaged'}
