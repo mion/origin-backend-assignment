@@ -1,9 +1,7 @@
-# In practice I would take the time to read through marshmallow's
-# documentation and use, writing a serializer for this from scratch
-# only made sense here because I'm in a hurry.
-#
-# from marshmallow import Schema, fields
-#
+# In practice I would take the time to read through the docs of a 
+# serialization lib (e.g. marshmallow) and use it. Writing a "quick and 
+# dirty" serializer for this from scratch only made sense here
+# because I'm under a time constraint.
 from riskprofiler.user_data import UserData, ItemData, ItemDataCollection, VehicleItemData, HouseItemData, Gender, MaritalStatus, HouseStatus
 from .errors import MissingKeyDeserializationError, WrongKeyTypeDeserializationError
 
