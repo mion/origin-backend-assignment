@@ -219,3 +219,22 @@ def test_recent_vehicle_policy_not_empty(make_user_data):
     assert scoring.add.call_count == 2
     scoring.add.assert_any_call(points=1, loi=Loi.auto, item=0)
     scoring.add.assert_any_call(points=1, loi=Loi.auto, item=2)
+
+def test_single_house_policy_multiple_houses(make_user_data):
+    user_data = make_user_data(houses=ItemDataCollection(
+        HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged),
+        HouseItemData(1, zip_code=124, status=HouseStatus.owned),
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = SingleHousePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_not_called()
+
+def test_single_house_policy_one_house(make_user_data):
+    user_data = make_user_data(houses=ItemDataCollection(
+        HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged)
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = SingleHousePolicy()
+    policy.apply(user_data, scoring)
+    scoring.add.assert_called_once_with(points=1, loi=Loi.home, item=0)
