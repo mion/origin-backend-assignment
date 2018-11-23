@@ -6,7 +6,7 @@ from http import HTTPStatus
 
 from .serialization import UserDataDeserializer, RiskProfileSerializer
 from .risk_profile_calculator import RiskProfileCalculator
-from .errors import *
+from .errors import MissingKeyDeserializationError, WrongKeyTypeDeserializationError
 
 bp = Blueprint('api', __name__)
 
