@@ -4,7 +4,7 @@
 #
 # from marshmallow import Schema, fields
 #
-from .user_data import UserData, ItemDataCollection, ItemData, VehicleItemData, HouseItemData
+from riskprofiler.user_data import UserData, ItemData, ItemDataCollection, VehicleItemData, HouseItemData, Gender, MaritalStatus, HouseStatus
 from .errors import MissingKeyDeserializationError, WrongKeyTypeDeserializationError
 
 def fetch(obj, key, _type):
@@ -16,19 +16,40 @@ def fetch(obj, key, _type):
     else:
         raise MissingKeyDeserializationError(key)
 
+class VehicleItemDataDeserializer:
+    def load(self, obj):
+        key = fetch(obj, 'key', int)
+        make = fetch(obj, 'make', str)
+        model = fetch(obj, 'model', str)
+        year = fetch(obj, 'year', int)
+        return VehicleItemData(key, make=make, model=model, year=year)
+
 class HouseItemDataDeserializer:
     def load(self, obj):
         key = fetch(obj, 'key', int)
         zip_code = fetch(obj, 'zip_code', int)
-        status = fetch(obj, 'status', str)
-        return None
+        status = HouseStatus.from_str(fetch(obj, 'status', str))
+        return HouseItemData(key, zip_code=zip_code, status=status)
 
 class UserDataDeserializer:
     def load(self, obj):
         age = fetch(obj, 'age', int)
-        gender = fetch(obj, 'gender', str)
-        marital_status = fetch(obj, 'marital_status', str)
+        gender = Gender.from_str(fetch(obj, 'gender', str))
+        marital_status = MaritalStatus.from_str(fetch(obj, 'marital_status', str))
         dependents = fetch(obj, 'dependents', int)
         income = fetch(obj, 'income', int)
-        houses = fetch(obj, 'houses', list)
-        return None
+        houses_obj = fetch(obj, 'houses', list)
+        houses = ItemDataCollection(*[HouseItemDataDeserializer().load(h) for h in houses_obj])
+        vehicles_obj = fetch(obj, 'vehicles', list)
+        vehicles = ItemDataCollection(*[VehicleItemDataDeserializer().load(v) for v in vehicles_obj])
+        risk_questions = fetch(obj, 'risk_questions', list)
+        return UserData(
+            age=age,
+            gender=gender,
+            marital_status=marital_status,
+            dependents=dependents,
+            income=income,
+            houses=houses,
+            vehicles=vehicles,
+            risk_questions=risk_questions
+        )

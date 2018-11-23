@@ -14,7 +14,7 @@ class Gender(Enum):
         elif s == 'female':
             return Gender.female
         else:
-            raise ValueError
+            raise ValueError('gender should be eitehr "male" or "female"')
 
 @unique
 class MaritalStatus(Enum):
@@ -28,7 +28,7 @@ class MaritalStatus(Enum):
         elif s == 'married':
             return MaritalStatus.married
         else:
-            raise ValueError
+            raise ValueError('marital_status should be either "single" or "married"')
 
 @unique
 class HouseStatus(Enum):
@@ -42,7 +42,7 @@ class HouseStatus(Enum):
         elif s == 'mortgaged':
             return HouseStatus.mortgaged
         else:
-            raise ValueError
+            raise ValueError('status should be either "owned" or "mortgaged"')
 
 class ItemDataCollection:
     def __init__(self, *args):
@@ -81,7 +81,7 @@ class VehicleItemData(ItemData):
         self.model = kwargs['model']
         self.year = kwargs['year']
     
-    def years_since_production(self, curr_date): # FIXME date calculation is not correct.
+    def years_since_production(self, curr_date):
         """Returns a decimal (float) number of years, 
         counted in days since `curr_date`."""
         production_date = datetime.date(self.year, 1, 1)

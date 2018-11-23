@@ -21,4 +21,4 @@ class WrongKeyTypeDeserializationError(OriginAdvisorError):
         self.expected_type = expected_type
     
     def __str__(self):
-        return 'key "{}" in serialized object has type "{}" (expected "{}") '.format(self.key, self.actual_type, self.expected_type)
+        return 'key "{}" in serialized object has wrong type "{}" (expected "{}") '.format(self.key, self.actual_type, self.expected_type)
