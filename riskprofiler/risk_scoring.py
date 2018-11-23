@@ -62,19 +62,22 @@ class RiskScoring(dict):
         loi = kwargs['loi']
         item = kwargs['item']
         score = kwargs['score']
-        self[loi].create_item(item, score)
+        if loi in self:
+            self[loi].create_item(item, score)
 
     def add(self, **kwargs):
         loi = kwargs['loi']
         points = kwargs['points']
         item = kwargs['item'] if 'item' in kwargs else None
-        self[loi].add(points, item)
+        if loi in self:
+            self[loi].add(points, item)
 
     def subtract(self, **kwargs):
         loi = kwargs['loi']
         points = kwargs['points']
         item = kwargs['item'] if 'item' in kwargs else None
-        self[loi].subtract(points, item)
+        if loi in self:
+            self[loi].subtract(points, item)
     
     def disable(self, **kwargs):
         loi = kwargs['loi']
