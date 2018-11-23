@@ -4,9 +4,8 @@ from flask import (
 from werkzeug.exceptions import abort
 from http import HTTPStatus
 
-from .risk_policies import CURRENT_RISK_POLICIES
 from .serialization import UserDataDeserializer, RiskProfileSerializer
-from .risk_scoring import RiskScoreValueMapping, RiskScoring, RiskProfileCalculator
+from .risk_profile_calculator import RiskProfileCalculator
 from .errors import *
 
 bp = Blueprint('api', __name__)
@@ -17,13 +16,9 @@ def get_risk_profile():
         user_data_obj = request.get_json()
         if user_data_obj is None:
             abort(HTTPStatus.BAD_REQUEST)
-        deserializer = UserDataDeserializer()
         try:
-            user_data = deserializer.load(user_data_obj)
-            mapping = RiskScoreValueMapping()
-            scoring = RiskScoring()
-            calculator = RiskProfileCalculator(user_data=user_data, risk_policies=CURRENT_RISK_POLICIES, risk_scoring=scoring, risk_score_value_mapping=mapping)
-            risk_profile = calculator.calculate()
+            user_data = UserDataDeserializer().load(user_data_obj)
+            risk_profile = RiskProfileCalculator(user_data=user_data).calculate()
             serializer = RiskProfileSerializer()
             resp = serializer.to_dict(risk_profile)
             return jsonify(resp), HTTPStatus.CREATED # Let's return 201 as if it had been saved to the DB.

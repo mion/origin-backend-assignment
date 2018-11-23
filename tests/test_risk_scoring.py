@@ -1,5 +1,6 @@
 import pytest
-from riskprofiler.risk_scoring import RiskScoring, _SingleItemRiskScore, _MultipleItemRiskScore, RiskAversion, RiskScoreValueMapping, RiskProfileCalculator
+from riskprofiler.risk_scoring import RiskScoring, _SingleItemRiskScore, _MultipleItemRiskScore
+from riskprofiler.risk_profile_calculator import RiskAversion, RiskScoreValueMapping, RiskProfileCalculator
 from riskprofiler.errors import InvalidRiskScoreOperation
 from riskprofiler.user_data import UserData
 from riskprofiler.risk_policies import BaseRiskPolicy

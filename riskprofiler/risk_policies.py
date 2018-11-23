@@ -99,18 +99,3 @@ class SingleVehiclePolicy(BaseRiskPolicy):
         if user_data.vehicles_count() == 1:
             vehicle = user_data.get_vehicle_at(0)
             scoring.add(points=1, loi=Loi.auto, item=vehicle.item_key())
-
-CURRENT_RISK_POLICIES = [
-    InitialRiskPolicy(),
-    NoIncomePolicy(),
-    NoVehiclePolicy(),
-    NoHousePolicy(),
-    AgePolicy(),
-    LargeIncomePolicy(),
-    MortgagedHousePolicy(),
-    DependentsPolicy(),
-    MaritalStatusPolicy(),
-    RecentVehiclePolicy(),
-    SingleHousePolicy(),
-    SingleVehiclePolicy()
-]
