@@ -1,93 +1,71 @@
 from .errors import InvalidRiskScoreOperation
 
 class _SingleItemRiskScore:
-    def __init__(self, score):
-        self.score = score
+    def __init__(self, value):
+        self.value = value
 
     def create_item(self, *args):
         raise InvalidRiskScoreOperation
 
-    def add(self, points, item):
-        if item is not None:
+    def add(self, points, key):
+        if key is not None:
             raise InvalidRiskScoreOperation
-        self.score += points
+        self.value += points
 
-    def subtract(self, points, item):
-        if item is not None:
+    def subtract(self, points, key):
+        if key is not None:
             raise InvalidRiskScoreOperation
-        self.score -= points
+        self.value -= points
 
-    def map_aversion(self, mapping):
-        return mapping.aversion_for(self.score)
+class _MultipleItemRiskScore(dict):
+    def create_item(self, key, value):
+        self[key] = value
 
-class _MultipleItemRiskScore:
-    def __init__(self):
-        self.score_for_item = {}
+    def subtract_from(self, key, points):
+        self[key] -= points
 
-    def create_item(self, item, item_score):
-        self.score_for_item[item] = item_score
-
-    def subtract_from(self, item, points):
-        self.score_for_item[item] -= points
-
-    def add(self, points, item):
-        if item is None:
-            for item, _ in self.score_for_item.items():
-                self.score_for_item[item] += points
+    def add(self, points, key):
+        if key is None:
+            for key, _ in self.items():
+                self[key] += points
         else:
-            self.score_for_item[item] += points
+            self[key] += points
 
-    def subtract(self, points, item):
-        if item is None:
-            for item, _ in self.score_for_item.items():
-                self.score_for_item[item] -= points
+    def subtract(self, points, key):
+        if key is None:
+            for key, _ in self.items():
+                self[key] -= points
         else:
-            self.score_for_item[item] -= points
+            self[key] -= points
 
-    def map_aversion(self, mapping):
-        aversion_for_item = {}
-        for item, score_value in self.score_for_item.items():
-            aversion_for_item[item] = mapping.aversion_for(score_value)
-        return aversion_for_item
-
-class RiskScoring:
-    def __init__(self, **kwargs):
-        self.score_for_loi = {}
-        self.disabled_lois = {}
-
+class RiskScoring(dict):
     def create(self, **kwargs):
         loi = kwargs['loi']
         multiple_items = kwargs['multiple_items'] if 'multiple_items' in kwargs else False
         if multiple_items:
-            self.score_for_loi[loi] = _MultipleItemRiskScore()
+            self[loi] = _MultipleItemRiskScore()
         else:
             score = kwargs['score']
-            self.score_for_loi[loi] = _SingleItemRiskScore(score)
+            self[loi] = _SingleItemRiskScore(score)
 
     def create_item(self, **kwargs):
         loi = kwargs['loi']
         item = kwargs['item']
         score = kwargs['score']
-        self.score_for_loi[loi].create_item(item, score)
+        self[loi].create_item(item, score)
 
     def add(self, **kwargs):
         loi = kwargs['loi']
         points = kwargs['points']
         item = kwargs['item'] if 'item' in kwargs else None
-        self.score_for_loi[loi].add(points, item)
+        self[loi].add(points, item)
 
     def subtract(self, **kwargs):
         loi = kwargs['loi']
         points = kwargs['points']
         item = kwargs['item'] if 'item' in kwargs else None
-        self.score_for_loi[loi].subtract(points, item)
+        self[loi].subtract(points, item)
     
     def disable(self, **kwargs):
         loi = kwargs['loi']
-        self.disabled_lois[loi] = True
-
-    def to_profile(self, mapping):
-        profile = {}
-        for loi, score in self.score_for_loi.items():
-            profile[loi] = score.map_aversion(mapping)
-        return profile
+        del self[loi]
