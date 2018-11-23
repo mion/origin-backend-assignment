@@ -77,13 +77,6 @@ class VehicleItemData(ItemData):
         year = json['year']
         return VehicleItemData(key, make=make, model=model, year=year)
 
-class RiskQuestionData:
-    def __init__(self, value):
-        self._value = value
-
-    def value(self):
-        return self._value
-
 class UserData:
     def __init__(self, **kwargs):
         self.age = kwargs['age']
