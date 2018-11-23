@@ -51,17 +51,32 @@ def test_initial_risk_policy(make_user_data):
     scoring.create_item.assert_any_call(loi=Loi.auto, item=0, score=0)
     scoring.create_item.assert_any_call(loi=Loi.auto, item=1, score=0)
 
-def test_no_income_policy(make_user_data):
+def test_no_income_policy_zero(make_user_data):
     user_data = make_user_data(income=0)
     scoring = Mock(spec=RiskScoring)
     policy = NoIncomePolicy()
     policy.apply(user_data, scoring)
     scoring.disable.assert_called_once_with(loi=Loi.disability)
 
-def test_no_vehicle_policy(make_user_data):
+def test_no_income_policy_above_zero(make_user_data):
+    user_data = make_user_data(income=500)
+    scoring = Mock(spec=RiskScoring)
+    policy = NoIncomePolicy()
+    policy.apply(user_data, scoring)
+    scoring.disable.assert_not_called()
+
+def test_no_vehicle_policy_empty(make_user_data):
     user_data = make_user_data()
     scoring = Mock(spec=RiskScoring)
     policy = NoVehiclePolicy()
     policy.apply(user_data, scoring)
     scoring.disable.assert_called_once_with(loi=Loi.auto)
 
+def test_no_vehicle_policy_not_empty(make_user_data):
+    user_data = make_user_data(vehicles=(
+        VehicleItemData(0, make='Tesla', model='Model S', year=2015),
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = NoVehiclePolicy()
+    policy.apply(user_data, scoring)
+    scoring.disable.assert_not_called()
