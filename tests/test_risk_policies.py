@@ -18,6 +18,8 @@ def user_data():
     )
 
 def test_initial_risk_policy(user_data):
-    scoring = RiskScoring()
+    scoring = Mock(spec=RiskScoring)
     policy = InitialRiskPolicy()
     policy.apply(user_data, scoring)
+    assert scoring.create.call_count == 4
+    assert scoring.create_item.call_count == 0
