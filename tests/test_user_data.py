@@ -1,4 +1,5 @@
 import pytest
+import datetime
 from riskprofiler.errors import ItemDataKeyNotUnique
 from riskprofiler.user_data import UserData, ItemData, ItemDataCollection, VehicleItemData, HouseItemData, Gender, MaritalStatus, HouseStatus
 
@@ -55,3 +56,7 @@ def test_item_data_collection():
     assert items[1] == item1
     with pytest.raises(ItemDataKeyNotUnique):
         collec.add(ItemData('foo'))
+
+def test_vehicle_item_data():
+    vid = VehicleItemData('foo', make='Bar', model='Quux', year=1995)
+    assert int(vid.years_since_production(curr_date=datetime.date(1998, 1, 1))) == 3
