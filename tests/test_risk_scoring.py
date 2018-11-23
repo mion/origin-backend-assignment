@@ -50,4 +50,8 @@ def test_risk_scoring_disable(scoring):
 
 def test_risk_scoring_invalid_operation(scoring):
     with pytest.raises(InvalidRiskScoreOperation):
-        scoring.create_item(loi='single', item='baz', score=42)
+        scoring.create_item(loi='single', item='key0', score=42)
+    with pytest.raises(InvalidRiskScoreOperation):
+        scoring.add(loi='single', item='key0', points=7)
+    with pytest.raises(InvalidRiskScoreOperation):
+        scoring.subtract(loi='single', item='key0', points=7)
