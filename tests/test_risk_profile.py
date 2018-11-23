@@ -1,2 +1,0 @@
-import pytest 
-from riskprofiler.risk_profile import RiskProfileCalculator

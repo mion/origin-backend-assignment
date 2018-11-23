@@ -110,5 +110,5 @@ class RiskProfileCalculator:
     
     def calculate(self):
         for policy in self.policies:
-            policy.apply(self.scoring)
+            policy.apply(self.user_data, self.scoring)
         return self.scoring.as_profile(self.mapping)
