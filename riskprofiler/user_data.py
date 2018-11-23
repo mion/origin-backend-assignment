@@ -32,7 +32,7 @@ class ItemDataCollection:
         self._item_data_for_key[item_data.item_key()] = item_data
 
     def items(self):
-        return self._item_data_for_key.values()
+        return [v for v in self._item_data_for_key.values()]
 
 class ItemData:
     def __init__(self, key):
@@ -91,9 +91,10 @@ class UserData:
         self.marital_status = kwargs['marital_status']
         self.dependents = kwargs['dependents']
         self.income = kwargs['income']
+        self.risk_questions = kwargs['risk_questions']
+        # Why inject ItemDataCollection?
         self.house_collec = kwargs['houses']
         self.vehicle_collec = kwargs['vehicles']
-        self.risk_questions = kwargs['risk_questions']
 
     def base_score(self):
         return sum(self.risk_questions)
