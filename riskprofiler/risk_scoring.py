@@ -1,3 +1,4 @@
+from enum import Enum, unique
 from .errors import InvalidRiskScoreOperation
 
 class _SingleItemRiskScore:
@@ -16,6 +17,9 @@ class _SingleItemRiskScore:
         if key is not None:
             raise InvalidRiskScoreOperation
         self.value -= points
+    
+    def mapped_with(self, mapping):
+        return mapping.map_score_value(self.value)
 
 class _MultipleItemRiskScore(dict):
     def create_item(self, key, value):
@@ -37,6 +41,12 @@ class _MultipleItemRiskScore(dict):
                 self[key] -= points
         else:
             self[key] -= points
+
+    def mapped_with(self, mapping):
+        mapped = {}
+        for key, value in self.items():
+            mapped[key] = mapping.map_score_value(value)
+        return mapped
 
 class RiskScoring(dict):
     def create(self, **kwargs):
@@ -69,3 +79,36 @@ class RiskScoring(dict):
     def disable(self, **kwargs):
         loi = kwargs['loi']
         del self[loi]
+    
+    def as_profile(self, mapping):
+        profile = {}
+        for loi, score in self.items():
+            profile[loi] = score.mapped_with(mapping)
+        return profile
+
+@unique
+class RiskAversion(Enum):
+    conservative = 'conservative'
+    average = 'average'
+    adventurous = 'adventurous'
+
+class RiskScoreValueMapping:
+    def map_score_value(self, score_value):
+        if score_value <= 0:
+            return RiskAversion.adventurous
+        elif score_value == 1 or score_value == 2:
+            return RiskAversion.average
+        else:
+            return RiskAversion.conservative
+
+class RiskProfileCalculator:
+    def __init__(self, **kwargs):
+        self.user_data = kwargs['user_data']
+        self.policies = kwargs['risk_policies']
+        self.scoring = kwargs['risk_scoring']
+        self.mapping = kwargs['risk_score_value_mapping']
+    
+    def calculate(self):
+        for policy in self.policies:
+            policy.apply(self.scoring)
+        return self.scoring.as_profile(self.mapping)
