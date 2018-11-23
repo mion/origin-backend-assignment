@@ -127,3 +127,21 @@ def test_age_policy_over_60(make_user_data):
     assert scoring.disable.call_count == 2
     scoring.disable.assert_any_call(loi=Loi.life)
     scoring.disable.assert_any_call(loi=Loi.disability)
+
+def test_large_income_policy_above(make_user_data):
+    user_data = make_user_data(income=100)
+    scoring = Mock(spec=RiskScoring)
+    policy = LargeIncomePolicy(large_income_thresh=99)
+    policy.apply(user_data, scoring)
+    assert scoring.subtract.call_count == 4
+    scoring.subtract.assert_any_call(points=1, loi=Loi.life)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.disability)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.home)
+    scoring.subtract.assert_any_call(points=1, loi=Loi.auto)
+
+def test_large_income_policy_under(make_user_data):
+    user_data = make_user_data(income=100)
+    scoring = Mock(spec=RiskScoring)
+    policy = LargeIncomePolicy(large_income_thresh=101)
+    policy.apply(user_data, scoring)
+    scoring.subtract.assert_not_called()

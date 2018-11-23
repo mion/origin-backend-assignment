@@ -91,6 +91,9 @@ class UserData:
 
     def has_income(self):
         return self.income > 0
+    
+    def is_income_above(self, value):
+        return self.income > value
 
     def is_under_age(self, target_age):
         return self.age < target_age
