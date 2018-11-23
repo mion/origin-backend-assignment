@@ -42,3 +42,16 @@ def test_user_data_query_methods():
     assert user_data.houses_count() == 4
     assert user_data.vehicles_count() == 2
     assert user_data.has_dependents()
+
+def test_item_data_collection():
+    collec = ItemDataCollection()
+    item0 = ItemData('foo')
+    item1 = ItemData('bar')
+    collec.add(item0)
+    collec.add(item1)
+    assert len(collec) == 2
+    items = collec.items()
+    assert items[0] == item0
+    assert items[1] == item1
+    with pytest.raises(ItemDataKeyNotUnique):
+        collec.add(ItemData('foo'))
