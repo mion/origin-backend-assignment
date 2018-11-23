@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy, NoVehiclePolicy
+from riskprofiler.risk_policies import Loi, InitialRiskPolicy, NoIncomePolicy, NoVehiclePolicy, NoHousePolicy
 from riskprofiler.user_data import UserData, ItemDataCollection, HouseItemData, VehicleItemData, HouseStatus, MaritalStatus, Gender
 from riskprofiler.risk_scoring import RiskScoring
 
@@ -35,7 +35,7 @@ def test_initial_risk_policy(make_user_data):
         VehicleItemData(1, make='Tesla', model='Model X', year=2017)
     )
     houses = ItemDataCollection(
-    HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged)
+        HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged)
     )
     user_data = make_user_data(vehicles=vehicles, houses=houses)
     scoring = Mock(spec=RiskScoring)
@@ -73,10 +73,26 @@ def test_no_vehicle_policy_empty(make_user_data):
     scoring.disable.assert_called_once_with(loi=Loi.auto)
 
 def test_no_vehicle_policy_not_empty(make_user_data):
-    user_data = make_user_data(vehicles=(
+    user_data = make_user_data(vehicles=ItemDataCollection(
         VehicleItemData(0, make='Tesla', model='Model S', year=2015),
     ))
     scoring = Mock(spec=RiskScoring)
     policy = NoVehiclePolicy()
+    policy.apply(user_data, scoring)
+    scoring.disable.assert_not_called()
+
+def test_no_house_policy_empty(make_user_data):
+    user_data = make_user_data()
+    scoring = Mock(spec=RiskScoring)
+    policy = NoHousePolicy()
+    policy.apply(user_data, scoring)
+    scoring.disable.assert_called_once_with(loi=Loi.home)
+
+def test_no_house_policy_not_empty(make_user_data):
+    user_data = make_user_data(houses=ItemDataCollection(
+        HouseItemData(0, zip_code=123, status=HouseStatus.mortgaged)
+    ))
+    scoring = Mock(spec=RiskScoring)
+    policy = NoHousePolicy()
     policy.apply(user_data, scoring)
     scoring.disable.assert_not_called()
